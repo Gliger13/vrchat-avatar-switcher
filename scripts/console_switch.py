@@ -1,34 +1,43 @@
-"""Basic script to switch avatars using the console.
+"""Basic script to switch avatars using the console."""
 
-Provide VRChat credentials via environment variables:
-LOGIN={login}
-PASSWORD={password}
-MFA_CODE={code}
-And type the name of the avatar to change to. Partial match. Chooses from all favorites avatars
-"""
-import logging
+import logging.config
 import os
 
 from avatar_switch.avatar_switcher import AvatarSwitcher
+from avatar_switch.errors import AuthenticationRequiredError
+from avatar_switch.errors import AvatarNotFoundError
 from avatar_switch.vrchat_api import VRChatAPI
 
+logger = logging.getLogger("vrchat-avatar-switch")
 
-def console_switch():
-    """Switch VRChat avatars using the console"""
+AVATARS_MAP: dict[str, str] = {
+    # "{vrchat_avatar_id}": "{any avatar name}"
+    # "avtr_00000000-0000-0000-0000-000000000000": "My Avatar Name",
+}
+
+
+def console_switch() -> None:
+    """Switch VRChat avatars using the console."""
+    logging.config.fileConfig("logging.conf", disable_existing_loggers=False)
+    logger.info("VRChat avatar switcher console script")
+
     login = os.getenv("LOGIN")
     password = os.getenv("PASSWORD")
     mfa_code = os.getenv("MFA_CODE")
 
     vrchat_api = VRChatAPI()
-    vrchat_api.basic_authentication(login, password)
-    vrchat_api.mfa_authentication(mfa_code)
+    vrchat_api.authenticate(login, password, mfa_code)
     avatar_switcher = AvatarSwitcher(vrchat_api)
-    avatars_map = avatar_switcher.get_all_favorite_avatars()
+    avatars_map = AVATARS_MAP or avatar_switcher.get_all_favorite_avatars()
     while True:
         avatar_name = input("Waiting for avatar name: ")
-        avatar_switcher.switch_avatar_by_name(avatars_map, avatar_name)
+        try:
+            avatar_switcher.switch_avatar_by_name(avatars_map, avatar_name)
+        except AuthenticationRequiredError:
+            vrchat_api.authenticate(login, password)
+        except AvatarNotFoundError as error:
+            logger.error(error)
 
 
 if __name__ == "__main__":
-    logging.getLogger().setLevel(logging.DEBUG)
     console_switch()

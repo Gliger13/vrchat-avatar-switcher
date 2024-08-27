@@ -1,10 +1,21 @@
 [project]
 name = "vrchat-avatar-switch"
-version = "0.0.1"
+version = "1.0.0"
+description = "Web API application for small bookshop"
+readme = "README.md"
+license = "LICENSE"
+requires-python = ">=3.11"
 
 dependencies = [
   "requests",
+  "tenacity",
 ]
 
 [project.optional-dependencies]
 dev = ["black", "pylint"]
+
+[tool.setuptools.packages.find]
+include = ["avatar_switch*", "scripts*", "logging.conf"]
+
+[project.scripts]
+avatar_switch = "scripts.console_switch:console_switch"
