@@ -3,6 +3,8 @@
 [![Python Version](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3112)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+> **Note:** This repository is archived because VRChat implemented avatar changing via OSC in [VRChat 2025.1.2, build 1582](https://docs.vrchat.com/docs/vrchat-202512-openbeta), which is much simpler than using the API used here.
+
 ## Context
 
 The project consists of a set of scripts that allow you to change your current VRChat avatar to a specific one by 
